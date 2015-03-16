@@ -1,6 +1,27 @@
-;; disable all vc backends
+;; Solution 1: disable all vc backends
 ;; @see http://stackoverflow.com/questions/5748814/how-does-one-disable-vc-git-in-emacs
 (setq vc-handled-backends ())
+
+;; ;; Solution 2: if NO network mounted drive involved
+;; (setq vc-handled-backends '(Git SVN Hg))
+
+;; ;; Solution 3: setup vc-handled-backends per project
+;; (setq vc-handled-backends ())
+;; (defun my-setup-develop-environment ()
+;;   (interactive)
+;;   (cond
+;;    ((my-project-name-contains-substring (file-truename "~/.emacs.d"))
+;;     (setq vc-handled-backends '(Git)))
+;;    (t (setq vc-handled-backends nil))))
+;; (add-hook 'java-mode-hook 'my-setup-develop-environment)
+;; (add-hook 'emacs-lisp-mode-hook 'my-setup-develop-environment)
+;; (add-hook 'org-mode-hook 'my-setup-develop-environment)
+;; (add-hook 'js2-mode-hook 'my-setup-develop-environment)
+;; (add-hook 'js-mode-hook 'my-setup-develop-environment)
+;; (add-hook 'javascript-mode-hook 'my-setup-develop-environment)
+;; (add-hook 'web-mode-hook 'my-setup-develop-environment)
+;; (add-hook 'c++-mode-hook 'my-setup-develop-environment)
+;; (add-hook 'c-mode-hook 'my-setup-develop-environment)
 
 (setq magit-save-some-buffers nil
       magit-process-popup-time 10
@@ -11,7 +32,7 @@
   (let ((current-prefix-arg t))
     (magit-status default-directory)))
 
-;; Sometimes I want check other developer's commit
+;; Sometimes I check other developer's commit
 ;; show file of specific version
 (autoload 'magit-show "magit" "" t nil)
 ;; show the commit
@@ -117,7 +138,6 @@
   "run `git push'"
   (interactive)
   (when buffer-file-name
-    (message "(pwd)=%s" default-directory)
     (shell-command (concat "cd " (pwd) ";git push"))
     (message "DONE! git push at %s" default-directory)
     ))
@@ -185,5 +205,26 @@
 ;; turn off the overlay, I do NOT want to lose original syntax highlight!
 (setq magit-highlight-overlay t)
 ;; }}
+
+;; {{ git-messenger
+(autoload 'git-messenger:popup-message "git-messenger" "" t)
+;; show details to play `git blame' game
+(setq git-messenger:show-detail t)
+(add-hook 'git-messenger:after-popup-hook
+          (lambda (msg)
+            ;; extract commit id and put into the kill ring
+            (when (string-match "\\(commit *: *\\)\\([0-9a-z]+\\)" msg)
+              (copy-yank-str (match-string 2 msg))
+              (message "commit hash => clipboard & kill-ring")
+              )))
+(global-set-key (kbd "C-x v p") 'git-messenger:popup-message)
+;; }}
+
+(setq cppcm-debug t)
+(setq cppcm-get-executable-full-path-callback
+          (lambda (path type tgt-name)
+            ;; extract commit id and put into the kill ring
+            (message "path=%s type=%s tgt-name=%s" path type tgt-name)
+            ))
 (provide 'init-git)
 

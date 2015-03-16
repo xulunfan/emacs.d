@@ -6,11 +6,13 @@
   (setq linum-mode-inhibit-modes-list '(eshell-mode
                                          shell-mode
                                          erc-mode
+                                         dired-mode
                                          help-mode
                                          text-mode
                                          fundamental-mode
                                          jabber-roster-mode
                                          jabber-chat-mode
+                                         inferior-scheme-mode
                                          twittering-mode
                                          compilation-mode
                                          weibo-timeline-mode
