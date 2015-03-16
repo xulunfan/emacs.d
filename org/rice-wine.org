@@ -1,0 +1,96 @@
+#+TITLE: Rice Wine 
+
+* Introduction
+  This is my personal Emacs configuration.
+  Now, it is only a tiny modification of redguardtoo's configuration.
+  I hope it make more by myself.
+
+* Implementation
+** Basic
+*** Set main dir
+- This is where magic begins
+  #+begin_src emacs-lisp :tangle yes
+  (setq rice-wine-dir (expand-file-name "~/.emacs.d/org"))
+  #+end_src
+*** Load path
+- add files in src in load-path
+  #+begin_src emacs-lisp :tangle yes
+  (let ((elisp-dir (expand-file-name "src" rice-wine-dir)))
+    (add-to-list 'load-path elisp-dir)
+    (when (file-exists-p elisp-dir)
+      (let ((default-directory elisp-dir))
+        (normal-top-level-add-subdirs-to-load-path))))
+  #+end_src
+
+** Features
+*** Backups
+- Don't let backups mess our eyes
+  #+begin_src emacs-lisp :tangle yes
+    (setq
+     backup-by-coping t ; don't clobber symlinks
+     backup-directory-alist '(("." . "~/.emacs.d/org/.backups"))
+     delete-old-versions t
+     kept-new-versions 6
+     kept-old-versions 2
+     version-control t  ;use versioned backups
+     )
+  
+  ;; Donot make backups of files, not safe
+  ;; @see https://github.com/joedicastro/dotfiles/tree/master/emacs
+  (setq vc-make-backup-files nil)
+  #+end_src
+
+*** My custom file
+- find my intended custom file
+  #+begin_src emacs-lisp :tangle yes
+  (setq custom-file (expand-file-name "custom.el" rice-wine-dir))
+  (when (file-exists-p custom-file)
+    (load-file custom-file))
+  #+end_src
+
+*** Coq 
+- make coq work
+  Proof General is a very ugly package. 
+  It forces us to make something on inside files(ProofGeneral-4.2/coq/coq.el, at line 65), if you want it work on Win.
+  Now, I fix "coq.el". But it still looks ugly. 
+  #+begin_src emacs-lisp :tangle yes
+  (let* ((src-dir (expand-file-name "src" rice-wine-dir))
+         (proof-file (expand-file-name "ProofGeneral-4.2/generic/proof-site.el"
+                                       src-dir)))
+    (load-file proof-file))
+  #+end_src
+
+*** Racket
+- using racket-mode
+  Why want this language? Because lisp.
+  For getting it from MELPA, I stop filter in init-elpa.el.
+  To activate usual lisp environment on racket, sanityinc/lisp-setup (from init-lisp.el may be) is combined on racket-mode-hook.
+  #+begin_src emacs-lisp :tangle yes
+  (let ((package-filter-function nil)) 
+    (require-package 'racket-mode))
+  
+  (require 'racket-mode)
+  (when *win32*
+    (setq racket-racket-program "c:/Program Files/Racket/Racket.exe")
+    (setq racket-raco-program "c:/Program Files/Racket/Raco.exe"))
+  
+  (add-hook 'racket-mode-hook 'sanityinc/lisp-setup)
+  #+end_src
+
+*** Haskell
+- using Haskell mode
+  I want this to be TA.
+  #+begin_src emacs-lisp :tangle yes
+  (when *win32*
+    (setq haskell-program-name "c:/Program Files/Haskell Platform/2014.2.0.0/bin/ghci.exe"))  
+  #+end_src
+
+*** Slime
+- Common Lisp Environment
+  Common Lisp said to be ugly but powerful, really?
+  #+begin_src emacs-lisp :tangle yes
+  (require 'slime-autoloads)
+  
+  (setq inferior-lisp-program "sbcl")
+  (setq slime-contribs '(slime-fancy))
+  #+end_src

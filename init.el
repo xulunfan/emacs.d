@@ -58,7 +58,7 @@
 
 ;; my personal setup, other major-mode specific setup need it.
 ;; It's dependent on init-site-lisp.el
-(if (file-exists-p "~/.custom.el") (load-file "~/.custom.el"))
+;; (if (file-exists-p "~/.custom.el") (load-file "~/.custom.el"))
 
 ;; win32 auto configuration, assuming that cygwin is installed at "c:/cygwin"
 ;; (condition-case nil
@@ -171,6 +171,16 @@
                              init-emacs-w3m
                              init-semantic))
 (idle-require-mode 1) ;; starts loading
+
+;;----------------------------------------------------------------------------
+;; load org/rice-wine.org
+;;----------------------------------------------------------------------------
+(message "--------------rice-wine is start!-----------------------------------")
+(require 'org)
+(require 'ob-tangle)
+(org-babel-load-file "~/.emacs.d/org/rice-wine.org")
+;;----------------------------------------------------------------------------
+
 
 (when (require 'time-date nil t)
    (message "Emacs startup time: %d seconds."
