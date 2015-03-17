@@ -60,6 +60,19 @@
     (load-file proof-file))
   #+end_src
 
+*** Python
+- Elpy, the Emacs Lisp Python Environment
+  First, I find python-mode, but it is badly documented.
+  Elpy is more beautiful and suit to the population of python.
+  Elpy is from https://github.com/jorgenschaefer/elpy
+  #+begin_src emacs-lisp :tangle yes
+  (let ((package-archives
+         (cons '("elpy" . "http://jorgenschaefer.github.io/packages/") package-archives)))
+    (require-package 'elpy))
+  
+  (package-initialize)
+  (elpy-enable)
+  #+end_src
 *** Racket
 - using racket-mode
   Why want this language? Because lisp.
