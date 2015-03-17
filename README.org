@@ -1,12 +1,16 @@
 * What is different from redguardtoo/emacs.d?
 ** Org
   I prefer using org-mode to organize my configuration.
+ 
   Lately I will move more his configuration (some parts I like) to org-style.
+ 
   Starter-kit give light to me. 
+
 ** Difference in structure
   A folder =~/.emacs.d/org= is added. All my implementations live in it.
 ** How to start it?
   My work branch is my-edit.
+ 
   The master is sync with redguardtoo's.
   #+begin_src sh
   cd ~
@@ -18,6 +22,7 @@
    You need to install Coq and Haskell through your OS first. 
 ** Git 
   If you want learn something of git, try this:
+
   http://www.liaoxuefeng.com/wiki/0013739516305929606dd18361248578c67b8067c8c017b000
 
 * Redguardtoo's Readme
