@@ -1,11 +1,33 @@
-* Before start
+* What is different from redguardtoo/emacs.d?
+- Org
+  I prefer using org-mode to organize my configuration.
+  Lately I will move more his configuration (some parts I like) to org-style.
+  Starter-kit give light to me. 
+- Difference in structure
+  A folder =~/.emacs.d/org= is added. All my implementations live in it.
+- How to start it?
+  My work branch is my-edit.
+  The master is sync with redguardtoo's.
+  #+begin_src sh
+  cd ~
+  git clone git@github.com:lczch/emacs.d.git .emacs.d
+  git branch -b my-edit /origin/my-edit
+  emacs&
+  #+end_src
+- Coq and Haskell is support
+- Git 
+  If you want learn something of git, try this:
+  http://www.liaoxuefeng.com/wiki/0013739516305929606dd18361248578c67b8067c8c017b000
+
+* Redguardtoo's Readme
+** Before start
 Please read below checklist for at least once
 - I recommend *Emacs 24.3.1*
 - [[https://github.com/redguardtoo/emacs.d/issues/169][You can make this setup more stable]]
 - I use [[http://www.vim.org][Vim]] key bindings. Check FAQ on how to disable it
 - Packages from [[http://melpa.org][melpa-unstable]] are *invisible* by default. Modify variable *melpa-include-packages* in init-elpa.el if you need any of them
 - Any other issues are covered in FAQ
-* Features
+** Features
 - Stable is the first priority
 - 100% usable in terminal
 - Popular languages are supported (C/C++/Java/Ruby/Perl/Python/C#/Lua/Javascript ...)
@@ -13,7 +35,7 @@ Please read below checklist for at least once
 - Optimized for cross-platform C++ development
 - Real time HTML syntax checker
 - Tested with v23.4, v24.3.1, v24.4 on *ALL* platforms (Linux/Cygwin/Mac/Windows)
-* Installation
+** Installation
 ** Minimum installation
 Most users should follow the section "Install in normal way".
 
@@ -156,7 +178,7 @@ These tools are *OPTIONAL*. Please ignore any related error message. For example
 *** syntaxerl
 - syntax check [[http://www.erlang.org/][Erlang]] through flymake
 - Install from [[https://github.com/ten0s/syntaxerl]]
-* Tutorial (OPTIONAL)
+** Tutorial (OPTIONAL)
 ** Basic tutorial
 *** Step 1, learn OS basics
 Read wikipedia in order to know,
@@ -175,7 +197,7 @@ Please watch the [[https://www.youtube.com/watch?v=oJTwQvgfgMM][Carsten Dominik'
 For that problem, you can visit [[http://www.emacswiki.org/emacs/][EmacsWiki]] for the solution. Newbies can ask for help on [[http://www.reddit.com/r/emacs/]].
 ** Advanced tutorial
 See [[https://github.com/redguardtoo/mastering-emacs-in-one-year-guide][Master Emacs in One Year]].
-* FAQ
+** FAQ
 ** GUI version has issues?
 Use terminal version.
 ** OS X user?
@@ -270,7 +292,7 @@ By default, the word files path is at "~/.eim/py.txt". I put it out of the emacs
 The path can be changed in init-eim.el.
 
 A sample py.txt can be downloaded [[https://gist.githubusercontent.com/redguardtoo/8dae2cd040996089cd61/raw/69f29362fdf880b8428012a4b5057d8dc6f5fc70/py.txt][HERE]].
-* Report bug
+** Report bug
 Check [[http://www.emacswiki.org/emacs/][EmacsWiki]] and my FAQ at first.
 
 File bug report at [[https://github.com/redguardtoo/emacs.d]]. Don't email me directly!
@@ -278,7 +300,7 @@ File bug report at [[https://github.com/redguardtoo/emacs.d]]. Don't email me di
 Please contact the original developer if you find any bug from third party packages.
 
 Bug report should include details (OS, Emacs version ...) plus the output of `emacs --debug-init` at minimum.
-* Misc
+** Misc
 ** Directory structure
 init.el is the main file. It includes all the other *.el files.
 
