@@ -140,7 +140,7 @@
 (require 'init-term-mode)
 (require 'init-web-mode)
 (require 'init-sr-speedbar)
-(require 'init-slime)
+;;(require 'init-slime)
 (when *emacs24* (require 'init-company))
 (require 'init-stripe-buffer)
 (require 'init-eim) ;;  cannot be idle-required

@@ -102,8 +102,17 @@
 - Common Lisp Environment
   Common Lisp said to be ugly but powerful, really?
   #+begin_src emacs-lisp :tangle yes
+  (let ((package-filter-function nil))
+    (require-package 'slime))
+  
   (require 'slime-autoloads)
   
   (setq inferior-lisp-program "sbcl")
+  
+  (add-to-list 'load-path (concat (directory-of-library "slime") "/contrib"))
   (setq slime-contribs '(slime-fancy))
+  ;(setq slime-protocol-version 'ignore)
+  ;(setq slime-net-coding-system 'utf-8-unix)
+  ;(setq slime-complete-symbol*-fancy t)
+  ;I don't know why up three codes conflict with slime-fancy, so I turn it off.
   #+end_src
