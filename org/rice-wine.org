@@ -3,7 +3,7 @@
 * Introduction
   This is my personal Emacs configuration.
   Now, it is only a tiny modification of redguardtoo's configuration.
-  I hope it make more by myself.
+  I hope it can make more in future.
 
 * Implementation
 ** Basic
@@ -92,10 +92,38 @@
 
 *** Haskell
 - using Haskell mode
-  I want this to be TA.
+  I need to use this when I'am TA.
   #+begin_src emacs-lisp :tangle yes
+  (require-package 'haskell-mode)
+  (setq haskell-font-lock-symbols t)
+  
+  (add-hook 'haskell-mode-hook
+            (lambda ()
+              (define-key haskell-mode-map (kbd "C-c h") 'hoogle)
+              (turn-on-haskell-doc-mode)
+              (turn-on-haskell-indent)))
+  
   (when *win32*
-    (setq haskell-program-name "c:/Program Files/Haskell Platform/2014.2.0.0/bin/ghci.exe"))  
+    (setq haskell-program-name "c:/Program Files/Haskell Platform/2014.2.0.0/bin/ghci.exe"))
+  
+  ; enable interactive mode
+  (require 'haskell-interactive-mode)
+  (require 'haskell-process)
+  (add-hook 'haskell-mode-hook 'interactive-haskell-mode)
+  
+  (custom-set-variables
+    '(haskell-process-suggest-remove-import-lines t)
+    '(haskell-process-auto-import-loaded-modules t)
+    '(haskell-process-log t))
+  
+  (define-key haskell-mode-map (kbd "C-c C-l") 'haskell-process-load-or-reload)
+  (define-key haskell-mode-map (kbd "C-`") 'haskell-interactive-bring)
+  (define-key haskell-mode-map (kbd "C-c C-t") 'haskell-process-do-type)
+  (define-key haskell-mode-map (kbd "C-c C-i") 'haskell-process-do-info)
+  (define-key haskell-mode-map (kbd "C-c C-c") 'haskell-process-cabal-build)
+  (define-key haskell-mode-map (kbd "C-c C-k") 'haskell-interactive-mode-clear)
+  (define-key haskell-mode-map (kbd "C-c c") 'haskell-process-cabal)
+  (define-key haskell-mode-map (kbd "SPC") 'haskell-mode-contextual-space)
   #+end_src
 
 *** Slime
@@ -114,5 +142,5 @@
   ;(setq slime-protocol-version 'ignore)
   ;(setq slime-net-coding-system 'utf-8-unix)
   ;(setq slime-complete-symbol*-fancy t)
-  ;I don't know why up three codes conflict with slime-fancy, so I turn it off.
+  ;I don't know why above three lines conflict with slime-fancy, so I comment them.
   #+end_src
