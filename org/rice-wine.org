@@ -93,15 +93,14 @@
 *** Haskell
 - using Haskell mode
   I need to use this when I'am TA.
+  But this is not work well, because it requires the newest ghc. 
   #+begin_src emacs-lisp :tangle yes
   (require-package 'haskell-mode)
-  (setq haskell-font-lock-symbols t)
+  ;(setq haskell-font-lock-symbols t)
   
   (add-hook 'haskell-mode-hook
             (lambda ()
-              (define-key haskell-mode-map (kbd "C-c h") 'hoogle)
-              (turn-on-haskell-doc-mode)
-              (turn-on-haskell-indent)))
+              (turn-on-haskell-indentation)))
   
   (when *win32*
     (setq haskell-program-name "c:/Program Files/Haskell Platform/2014.2.0.0/bin/ghci.exe"))
@@ -143,4 +142,167 @@
   ;(setq slime-net-coding-system 'utf-8-unix)
   ;(setq slime-complete-symbol*-fancy t)
   ;I don't know why above three lines conflict with slime-fancy, so I comment them.
+  #+end_src
+
+** Misc Features
+*** Basic preferences
+- ...
+  #+begin_src emacs-lisp :tangle yes
+  (setq-default
+   buffers-menu-max-size 30
+   case-fold-search t
+   compilation-scroll-output t
+   ediff-split-window-function 'split-window-horizontally
+   ediff-window-setup-function 'ediff-setup-windows-plain
+   grep-highlight-matches t
+   grep-scroll-output t
+   indent-tabs-mode nil
+   line-spacing 0.2
+   mouse-yank-at-point t
+   set-mark-command-repeat-pop t
+   tooltip-delay 1.5
+   truncate-lines nil
+   truncate-partial-width-windows nil
+   ;; no annoying beep on errors
+   visible-bell t)
+  #+end_src
+*** Show matching parens
+- ...
+  #+begin_src emacs-lisp :tangle yes
+  (paren-activate)     ; activating mic-paren
+  #+end_src
+*** Set tab-width=4
+- ...
+  #+begin_src emacs-lisp :tangle yes
+  (setq-default tab-width 4)
+  (defun toggle-indent-tab ()
+    (interactive)
+    (if indent-tabs-mode
+        (progn
+          (setq indent-tabs-mode nil))
+      (progn
+          (setq indent-tabs-mode t)
+          (setq indent-line-function 'insert-tab)
+        )))
+  #+end_src
+*** Change to y-or-n-p
+- ...
+  #+begin_src emacs-lisp :tangle yes
+  (fset 'yes-or-no-p 'y-or-n-p)
+  #+end_src
+*** Show Column number
+- ...
+  #+begin_src emacs-lisp :tangle yes
+  (column-number-mode 1)
+  #+end_src
+*** No automatic new line when scrolling down at buffer bottom
+- ...
+  #+begin_src emacs-lisp :tangle yes
+  (setq next-line-add-newlines nil)
+  #+end_src
+*** Time
+- ...
+  #+begin_src emacs-lisp :tangle yes
+  (setq display-time-24hr-format t)
+  (setq display-time-day-and-date t)
+  (display-time)
+  #+end_src
+*** Switch-window
+- ...
+  #+begin_src emacs-lisp :tangle yes
+  (global-set-key (kbd "M-o") 'switch-window)
+  #+end_src
+
+*** Search
+- ...
+  #+begin_src emacs-lisp :tangle yes
+  (global-set-key "\C-s" 'isearch-forward-regexp)
+  (global-set-key "\M-s" 'isearch-backward-regexp)
+  #+end_src
+*** find-file-other-frame
+- This is some weird. How can I kill the frame?
+  #+begin_src emacs-lisp :tangle yes
+  (global-set-key "\C-x\C-n" 'find-file-other-frame) ;open new frame with a file
+  #+end_src
+
+
+** Functions
+*** grep-pattern-into-list
+- ...
+  #+begin_src emacs-lisp :tangle yes
+  (defun grep-pattern-into-list (regexp)
+    (let ((s (buffer-string))
+          (pos 0)
+          item
+          items)
+      (while (setq pos (string-match regexp s pos))
+        (setq item (match-string-no-properties 0 s))
+        (setq pos (+ pos (length item)))
+        (if (not (member item items))
+            (add-to-list 'items item)
+          ))
+      items))
+  #+end_src
+*** grep-pattern-into-kill-ring
+- ...
+  #+begin_src emacs-lisp :tangle yes
+  (defun grep-pattern-into-kill-ring (regexp)
+    "Find all strings matching REGEXP in current buffer.
+  grab matched string and insert them into kill-ring"
+    (interactive
+     (let* ((regexp (read-regexp "grep regex:")))
+       (list regexp)))
+    (let (items rlt)
+      (setq items (grep-pattern-into-list regexp))
+      (dolist (i items)
+        (setq rlt (concat rlt (format "%s\n" i)))
+        )
+      (kill-new rlt)
+      (message "matched strings => kill-ring")
+      rlt))
+  #+end_src
+*** convert a buffer between dos ^M end of lines and unix end of lines
+- ...
+  #+begin_src emacs-lisp :tangle yes
+  ;convert a buffer from dos ^M end of lines to unix end of lines
+  (defun dos2unix ()
+    (interactive)
+    (goto-char (point-min))
+    (while (search-forward "\r" nil t) (replace-match "")))
+  
+  ;vice versa
+  (defun unix2dos ()
+    (interactive)
+    (goto-char (point-min))
+    (while (search-forward "\n" nil t) (replace-match "\r\n")))
+  #+end_src
+*** show ascii table
+- ...
+  #+begin_src emacs-lisp :tangle yes
+  ;show ascii table
+  (defun ascii-table ()
+    "Print the ascii table. Based on a defun by Alex Schroeder <asc@bsiag.com>"
+    (interactive)
+    (switch-to-buffer "*ASCII*")
+    (erase-buffer)
+    (insert (format "ASCII characters up to number %d.\n" 254))
+    (let ((i 0))
+      (while (< i 254)
+             (setq i (+ i 1))
+             (insert (format "%4d %c\n" i i))))
+    (beginning-of-buffer))
+  #+end_src
+*** insert-date
+- ...
+  #+begin_src emacs-lisp :tangle yes
+  (defun insert-date (prefix)
+      "Insert the current date. With prefix-argument, use ISO format. With
+     two prefix arguments, write out the day and month name."
+      (interactive "P")
+      (let ((format (cond
+                     ((not prefix) "%d.%m.%Y")
+                     ((equal prefix '(4)) "%Y-%m-%d")
+                     ((equal prefix '(16)) "%d %B %Y")))
+            )
+        (insert (format-time-string format))))
   #+end_src

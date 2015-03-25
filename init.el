@@ -146,7 +146,7 @@
 (require 'init-eim) ;;  cannot be idle-required
 (require 'init-hs-minor-mode)
 ;; need statistics of keyfreq asap
-(require 'init-keyfreq)
+;;(require 'init-keyfreq)
 (if *emacs24* (require 'init-projectile))
 
 ;; misc has some crucial tools I need immediately

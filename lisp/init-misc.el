@@ -1,23 +1,23 @@
 ;;----------------------------------------------------------------------------
 ;; Some basic preferences
 ;;----------------------------------------------------------------------------
-(setq-default
- buffers-menu-max-size 30
- case-fold-search t
- compilation-scroll-output t
- ediff-split-window-function 'split-window-horizontally
- ediff-window-setup-function 'ediff-setup-windows-plain
- grep-highlight-matches t
- grep-scroll-output t
- indent-tabs-mode nil
- line-spacing 0.2
- mouse-yank-at-point t
- set-mark-command-repeat-pop t
- tooltip-delay 1.5
- truncate-lines nil
- truncate-partial-width-windows nil
- ;; no annoying beep on errors
- visible-bell t)
+;; (setq-default
+;;  buffers-menu-max-size 30
+;;  case-fold-search t
+;;  compilation-scroll-output t
+;;  ediff-split-window-function 'split-window-horizontally
+;;  ediff-window-setup-function 'ediff-setup-windows-plain
+;;  grep-highlight-matches t
+;;  grep-scroll-output t
+;;  indent-tabs-mode nil
+;;  line-spacing 0.2
+;;  mouse-yank-at-point t
+;;  set-mark-command-repeat-pop t
+;;  tooltip-delay 1.5
+;;  truncate-lines nil
+;;  truncate-partial-width-windows nil
+;;  ;; no annoying beep on errors
+;;  visible-bell t)
 
 ;; use my own bmk if it exists
 (if (file-exists-p (file-truename "~/.emacs.bmk"))
@@ -55,7 +55,7 @@
 ;;----------------------------------------------------------------------------
 ;; Show matching parens
 ;;----------------------------------------------------------------------------
-(paren-activate)     ; activating mic-paren
+;; (paren-activate)     ; activating mic-paren
 
 ;;----------------------------------------------------------------------------
 ;; Fix per-window memory of buffer point positions
@@ -161,17 +161,18 @@
 
 ;; some project prefer tab, so be it
 ;; @see http://stackoverflow.com/questions/69934/set-4-space-indent-in-emacs-in-text-mode
-(setq-default tab-width 4)
-(defun toggle-indent-tab ()
-  (interactive)
-  (if indent-tabs-mode
-      (progn
-        (setq indent-tabs-mode nil))
-    (progn
-        (setq indent-tabs-mode t)
-        (setq indent-line-function 'insert-tab)
-      )))
-;;----------------------------------------------------------------------------
+;; (setq-default tab-width 4)
+;; (defun toggle-indent-tab ()
+;;   (interactive)
+;;   (if indent-tabs-mode
+;;       (progn
+;;         (setq indent-tabs-mode nil))
+;;     (progn
+;;         (setq indent-tabs-mode t)
+;;         (setq indent-line-function 'insert-tab)
+;;       )))
+;; ;
+                                        ;----------------------------------------------------------------------------
 ;; Misc config - yet to be placed in separate files
 ;;----------------------------------------------------------------------------
 ;; {{ shell and conf
@@ -193,9 +194,9 @@
 (setq midnight-mode t)
 
 (add-auto-mode 'tcl-mode "Portfile\\'")
-(fset 'yes-or-no-p 'y-or-n-p)
+;; (fset 'yes-or-no-p 'y-or-n-p)
 
-(column-number-mode 1)
+;; (column-number-mode 1)
 
 ;; NO automatic new line when scrolling down at buffer bottom
 (setq next-line-add-newlines nil)
@@ -207,55 +208,55 @@
 (put 'downcase-region 'disabled nil)
 (put 'upcase-region 'disabled nil)
 
-;; Write backup files to own directory
-(if (not (file-exists-p (expand-file-name "~/.backups")))
-    (make-directory (expand-file-name "~/.backups"))
-    )
-(setq
-  backup-by-coping t ; don't clobber symlinks
-  backup-directory-alist '(("." . "~/.backups"))
-  delete-old-versions t
-  kept-new-versions 6
-  kept-old-versions 2
-  version-control t  ;use versioned backups
-  )
+;; ;; Write backup files to own directory
+;; (if (not (file-exists-p (expand-file-name "~/.backups")))
+;;     (make-directory (expand-file-name "~/.backups"))
+;;     )
+;; (setq
+;;   backup-by-coping t ; don't clobber symlinks
+;;   backup-directory-alist '(("." . "~/.backups"))
+;;   delete-old-versions t
+;;   kept-new-versions 6
+;;   kept-old-versions 2
+;;   version-control t  ;use versioned backups
+;;   )
 
-;; Donot make backups of files, not safe
-;; @see https://github.com/joedicastro/dotfiles/tree/master/emacs
-(setq vc-make-backup-files nil)
+;; ;; Donot make backups of files, not safe
+;; ;; @see https://github.com/joedicastro/dotfiles/tree/master/emacs
+;; (setq vc-make-backup-files nil)
 
 ;; Don't disable narrowing commands
 (put 'narrow-to-region 'disabled nil)
 (put 'narrow-to-page 'disabled nil)
 (put 'narrow-to-defun 'disabled nil)
 
-(defun grep-pattern-into-list (regexp)
-  (let ((s (buffer-string))
-        (pos 0)
-        item
-        items)
-    (while (setq pos (string-match regexp s pos))
-      (setq item (match-string-no-properties 0 s))
-      (setq pos (+ pos (length item)))
-      (if (not (member item items))
-          (add-to-list 'items item)
-        ))
-    items))
+;; (defun grep-pattern-into-list (regexp)
+;;   (let ((s (buffer-string))
+;;         (pos 0)
+;;         item
+;;         items)
+;;     (while (setq pos (string-match regexp s pos))
+;;       (setq item (match-string-no-properties 0 s))
+;;       (setq pos (+ pos (length item)))
+;;       (if (not (member item items))
+;;           (add-to-list 'items item)
+;;         ))
+;;     items))
 
-(defun grep-pattern-into-kill-ring (regexp)
-  "Find all strings matching REGEXP in current buffer.
-grab matched string and insert them into kill-ring"
-  (interactive
-   (let* ((regexp (read-regexp "grep regex:")))
-     (list regexp)))
-  (let (items rlt)
-    (setq items (grep-pattern-into-list regexp))
-    (dolist (i items)
-      (setq rlt (concat rlt (format "%s\n" i)))
-      )
-    (kill-new rlt)
-    (message "matched strings => kill-ring")
-    rlt))
+;; (defun grep-pattern-into-kill-ring (regexp)
+;;   "Find all strings matching REGEXP in current buffer.
+;; grab matched string and insert them into kill-ring"
+;;   (interactive
+;;    (let* ((regexp (read-regexp "grep regex:")))
+;;      (list regexp)))
+;;   (let (items rlt)
+;;     (setq items (grep-pattern-into-list regexp))
+;;     (dolist (i items)
+;;       (setq rlt (concat rlt (format "%s\n" i)))
+;;       )
+;;     (kill-new rlt)
+;;     (message "matched strings => kill-ring")
+;;     rlt))
 
 (defvar rimenu-position-pair nil "positions before and after imenu jump")
 (add-hook 'imenu-after-jump-hook
@@ -315,12 +316,12 @@ grab matched string, cssize them, and insert into kill ring"
     rlt))
 
 ;; from RobinH, Time management
-(setq display-time-24hr-format t)
-(setq display-time-day-and-date t)
-(display-time)
+;; (setq display-time-24hr-format t)
+;; (setq display-time-day-and-date t)
+;; (display-time)
 
 (global-set-key [f12] 'list-bookmarks)
-(global-set-key (kbd "M-o") 'switch-window)
+;; (global-set-key (kbd "M-o") 'switch-window)
 
 (when *win32*
   ;; resize frame
@@ -352,8 +353,8 @@ grab matched string, cssize them, and insert into kill ring"
 (global-set-key [f2] 'repeat-complex-command)
 
 ;effective emacs item 3
-(global-set-key "\C-s" 'isearch-forward-regexp)
-(global-set-key "\M-s" 'isearch-backward-regexp)
+;; (global-set-key "\C-s" 'isearch-forward-regexp)
+;; (global-set-key "\M-s" 'isearch-backward-regexp)
 (global-set-key "\C-\M-s" 'tags-search)
 (global-set-key "\C-x\C-n" 'find-file-other-frame) ;open new frame with a file
 
@@ -361,42 +362,42 @@ grab matched string, cssize them, and insert into kill ring"
 (defun void () "this is a no-op" (interactive))
 
 ;convert a buffer from dos ^M end of lines to unix end of lines
-(defun dos2unix ()
-  (interactive)
-  (goto-char (point-min))
-  (while (search-forward "\r" nil t) (replace-match "")))
+;; (defun dos2unix ()
+;;   (interactive)
+;;   (goto-char (point-min))
+;;   (while (search-forward "\r" nil t) (replace-match "")))
 
-;vice versa
-(defun unix2dos ()
-  (interactive)
-  (goto-char (point-min))
-  (while (search-forward "\n" nil t) (replace-match "\r\n")))
+;; ;vice versa
+;; (defun unix2dos ()
+;;   (interactive)
+;;   (goto-char (point-min))
+;;   (while (search-forward "\n" nil t) (replace-match "\r\n")))
 
-;show ascii table
-(defun ascii-table ()
-  "Print the ascii table. Based on a defun by Alex Schroeder <asc@bsiag.com>"
-  (interactive)
-  (switch-to-buffer "*ASCII*")
-  (erase-buffer)
-  (insert (format "ASCII characters up to number %d.\n" 254))
-  (let ((i 0))
-    (while (< i 254)
-           (setq i (+ i 1))
-           (insert (format "%4d %c\n" i i))))
-  (beginning-of-buffer))
+;; ;show ascii table
+;; (defun ascii-table ()
+;;   "Print the ascii table. Based on a defun by Alex Schroeder <asc@bsiag.com>"
+;;   (interactive)
+;;   (switch-to-buffer "*ASCII*")
+;;   (erase-buffer)
+;;   (insert (format "ASCII characters up to number %d.\n" 254))
+;;   (let ((i 0))
+;;     (while (< i 254)
+;;            (setq i (+ i 1))
+;;            (insert (format "%4d %c\n" i i))))
+;;   (beginning-of-buffer))
 
 
-;; I'm in Australia now, so I set the locale to "en_AU"
-(defun insert-date (prefix)
-    "Insert the current date. With prefix-argument, use ISO format. With
-   two prefix arguments, write out the day and month name."
-    (interactive "P")
-    (let ((format (cond
-                   ((not prefix) "%d.%m.%Y")
-                   ((equal prefix '(4)) "%Y-%m-%d")
-                   ((equal prefix '(16)) "%d %B %Y")))
-          )
-      (insert (format-time-string format))))
+;; ;; I'm in Australia now, so I set the locale to "en_AU"
+;; (defun insert-date (prefix)
+;;     "Insert the current date. With prefix-argument, use ISO format. With
+;;    two prefix arguments, write out the day and month name."
+;;     (interactive "P")
+;;     (let ((format (cond
+;;                    ((not prefix) "%d.%m.%Y")
+;;                    ((equal prefix '(4)) "%Y-%m-%d")
+;;                    ((equal prefix '(16)) "%d %B %Y")))
+;;           )
+;;       (insert (format-time-string format))))
 
 (defun insert-blog-version ()
   "insert version of my blog post"
