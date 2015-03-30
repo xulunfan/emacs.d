@@ -165,7 +165,8 @@
    truncate-partial-width-windows nil
    ;; no annoying beep on errors
    visible-bell t)
-  #+end_src
+  (define-key global-map (kbd "RET") 'newline-and-indent)
+   #+end_src
 *** Show matching parens
 - ...
   #+begin_src emacs-lisp :tangle yes
@@ -213,7 +214,7 @@
   (global-set-key (kbd "M-o") 'switch-window)
   #+end_src
 
-*** Search
+*** Regexp Isearch
 - ...
   #+begin_src emacs-lisp :tangle yes
   (global-set-key "\C-s" 'isearch-forward-regexp)
@@ -223,6 +224,334 @@
 - This is some weird. How can I kill the frame?
   #+begin_src emacs-lisp :tangle yes
   (global-set-key "\C-x\C-n" 'find-file-other-frame) ;open new frame with a file
+  #+end_src
+
+*** Bookmarks
+- It seems conflict with evil mode.  
+  #+begin_src emacs-lisp :tangle yes
+  (if (file-exists-p (file-truename "~/.emacs.bmk"))
+      (setq bookmark-default-file (file-truename "~/.emacs.bmk")))
+  
+  (global-set-key (kbd "C-.") 'set-mark-command)
+  (global-set-key (kbd "C-x C-.") 'pop-global-mark)
+  (global-set-key [f12] 'list-bookmarks)
+  #+end_src
+
+*** effective emacs item 7 and 9
+- ...
+  #+begin_src emacs-lisp :tangle yes
+  (if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
+  (if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
+  ;(if (fboundp 'menu-bar-mode) (menu-bar-mode -1))
+  (defalias 'qrr 'query-replace-regexp)
+  #+end_src
+
+*** clipboard
+- ...
+  #+begin_src emacs-lisp :tangle yes
+  ;; Use the system clipboard
+  (setq x-select-enable-clipboard t)
+  ;; you need install xsel under Linux
+  ;; xclip has some problem when copying under Linux
+  (defun copy-yank-str (msg &optional clipboard-only)
+    (unless clipboard-only (kill-new msg))
+    (cond
+     ;; display-graphic-p need windows 23.3.1
+     ((and (display-graphic-p) x-select-enable-clipboard)
+      (x-set-selection 'CLIPBOARD msg))
+     (t (with-temp-buffer
+          (insert msg)
+          (shell-command-on-region (point-min) (point-max)
+                                   (cond
+                                    ((eq system-type 'cygwin) "putclip")
+                                    ((eq system-type 'darwin) "pbcopy")
+                                    (t "xsel -ib")
+                                    )))
+      )))
+  
+  (defun cp-filename-of-current-buffer ()
+    "copy file name (NOT full path) into the yank ring and OS clipboard"
+    (interactive)
+    (let (filename)
+      (when buffer-file-name
+        (setq filename (file-name-nondirectory buffer-file-name))
+        (copy-yank-str filename)
+        (message "filename %s => clipboard & yank ring" filename)
+        )))
+  
+  (defun cp-filename-line-number-of-current-buffer ()
+    "copy file:line into the yank ring and clipboard"
+    (interactive)
+    (let (filename linenum rlt)
+      (when buffer-file-name
+        (setq filename (file-name-nondirectory buffer-file-name))
+        (setq linenum (save-restriction
+                        (widen)
+                        (save-excursion
+                          (beginning-of-line)
+                          (1+ (count-lines 1 (point))))))
+        (setq rlt (format "%s:%d" filename linenum))
+        (copy-yank-str rlt)
+        (message "%s => clipboard & yank ring" rlt)
+        )))
+  
+  (defun cp-fullpath-of-current-buffer ()
+    "copy full path into the yank ring and OS clipboard"
+    (interactive)
+    (when buffer-file-name
+      (copy-yank-str (file-truename buffer-file-name))
+      (message "file full path => clipboard & yank ring")
+      ))
+  
+  (defun copy-to-x-clipboard ()
+    (interactive)
+    (if (region-active-p)
+        (progn
+          (cond
+           ((and (display-graphic-p) x-select-enable-clipboard)
+            (x-set-selection 'CLIPBOARD (buffer-substring (region-beginning) (region-end))))
+           (t (shell-command-on-region (region-beginning) (region-end)
+                                       (cond
+                                        (*cygwin* "putclip")
+                                        (*is-a-mac* "pbcopy")
+                                        (*linux* "xsel -ib")))
+              ))
+          (message "Yanked region to clipboard!")
+          (deactivate-mark))
+          (message "No region active; can't yank to clipboard!")))
+  
+  (defun get-str-from-x-clipboard ()
+    (let (s)
+      (cond
+       ((and (display-graphic-p) x-select-enable-clipboard)
+        (setq s (x-selection 'CLIPBOARD)))
+       (t (setq s (shell-command-to-string
+                   (cond
+                    (*cygwin* "getclip")
+                    (*is-a-mac* "pbpaste")
+                    (t "xsel -ob"))))
+          ))
+      s))
+  
+  
+  (defun paste-from-x-clipboard()
+    "Paste string clipboard"
+    (interactive)
+    (insert (get-str-from-x-clipboard)))
+  
+  (defun my/paste-in-minibuffer ()
+    (local-set-key (kbd "M-y") 'paste-from-x-clipboard)
+    )
+  
+  (add-hook 'minibuffer-setup-hook 'my/paste-in-minibuffer)
+  
+  (defun paste-from-clipboard-and-cc-kill-ring ()
+    "paste from clipboard and cc the content into kill ring"
+    (interactive)
+    (let (str)
+      (with-temp-buffer
+        (paste-from-x-clipboard)
+        (setq str (buffer-string)))
+      ;; finish the paste
+      (insert str)
+      ;; cc the content into kill ring at the same time
+      (kill-new str)
+      ))
+  ;;; }}
+  
+  
+  #+end_src
+
+*** saveplace
+- ...
+  #+begin_src emacs-lisp :tangle yes
+  ; @see http://www.emacswiki.org/emacs/SavePlace
+  (require 'saveplace)
+  (setq-default save-place t)
+  #+end_src
+*** expand-region
+- ...
+  #+begin_src emacs-lisp :tangle yes
+  (if window-system
+   (progn
+     (define-key global-map (kbd "C-2") 'er/expand-region)
+     (define-key global-map (kbd "C-M-2") 'er/contract-region)
+     )
+   (progn
+     (define-key global-map (kbd "C-@") 'er/expand-region)
+     (define-key global-map (kbd "C-M-@") 'er/contract-region)
+   )
+  )
+  #+end_src
+*** eshell
+- ...
+  #+begin_src emacs-lisp :tangle yes
+  (setq eshell-prompt-function
+         (lambda ()
+           (concat (getenv "USER") " $ ")))
+  #+end_src
+*** smarter-move-beginning-of-line
+- ...
+  #+begin_src emacs-lisp :tangle yes
+  ;; { smarter navigation to the beginning of a line
+  ;; http://emacsredux.com/blog/2013/05/22/smarter-navigation-to-the-beginning-of-a-line/
+  (defun smarter-move-beginning-of-line (arg)
+    "Move point back to indentation of beginning of line.
+  
+  Move point to the first non-whitespace character on this line.
+  If point is already there, move to the beginning of the line.
+  Effectively toggle between the first non-whitespace character and
+  the beginning of the line.
+  
+  If ARG is not nil or 1, move forward ARG - 1 lines first.  If
+  point reaches the beginning or end of the buffer, stop there."
+    (interactive "^p")
+    (setq arg (or arg 1))
+  
+    ;; Move lines first
+    (when (/= arg 1)
+      (let ((line-move-visual nil))
+        (forward-line (1- arg))))
+  
+    (let ((orig-point (point)))
+      (back-to-indentation)
+      (when (= orig-point (point))
+        (move-beginning-of-line 1))))
+  
+  ;; remap C-a to `smarter-move-beginning-of-line'
+  (global-set-key [remap move-beginning-of-line]
+                  'smarter-move-beginning-of-line)
+  
+  #+end_src
+
+*** sudo-edit
+- ...
+  #+begin_src emacs-lisp :tangle yes
+  (defun sudo-edit (&optional arg)
+    "Edit currently visited file as root.
+  With a prefix ARG prompt for a file to visit.
+  Will also prompt for a file to visit if current
+  buffer is not visiting a file."
+    (interactive "P")
+    (if (or arg (not buffer-file-name))
+        (find-file (concat "/sudo:root@localhost:"
+                           (ido-read-file-name "Find file(as root): ")))
+      (find-alternate-file (concat "/sudo:root@localhost:" buffer-file-name))))
+  
+  ;; (defadvice ido-find-file (after find-file-sudo activate)
+  ;;   "Find file as root if necessary."
+  ;;   (unless (and buffer-file-name
+  ;;                (file-writable-p buffer-file-name))
+  ;;     (find-alternate-file (concat "/sudo:root@localhost:" buffer-file-name))))
+  ;; }}
+  #+end_src
+
+*** eval and replace s-exp
+- ...
+  #+begin_src emacs-lisp :tangle yes
+  ;; {{ eval and replace anywhere
+  ;; @see http://emacs.wordpress.com/2007/01/17/eval-and-replace-anywhere/
+  (defun fc-eval-and-replace ()
+    "Replace the preceding sexp with its value."
+    (interactive)
+    (backward-kill-sexp)
+    (condition-case nil
+        (prin1 (eval (read (current-kill 0)))
+               (current-buffer))
+      (error (message "Invalid expression")
+             (insert (current-kill 0)))))
+  (global-set-key (kbd "C-c e") 'fc-eval-and-replace)
+  
+  (defun calc-eval-and-insert (&optional start end)
+    (interactive "r")
+    (let ((result (calc-eval (buffer-substring-no-properties start end))))
+      (goto-char (point-at-eol))
+      (insert " = " result)))
+  
+  (defun calc-eval-line-and-insert ()
+    (interactive)
+    (calc-eval-and-insert (point-at-bol) (point-at-eol)))
+  (global-set-key (kbd "C-c C-e") 'calc-eval-line-and-insert)
+  #+end_src
+*** buffer move
+- ...
+  #+begin_src emacs-lisp :tangle yes
+  (autoload 'buf-move-left "buffer-move" "move buffer" t)
+  (autoload 'buf-move-right "buffer-move" "move buffer" t)
+  (autoload 'buf-move-up "buffer-move" "move buffer" t)
+  (autoload 'buf-move-down "buffer-move" "move buffer" t)
+  #+end_src
+
+*** save history
+- ...
+  #+begin_src emacs-lisp :tangle yes
+  (when (file-writable-p (file-truename "~/.emacs.d/history"))
+    (setq history-length 8000)
+    (setq savehist-additional-variables '(search-ring regexp-search-ring kill-ring))
+    (savehist-mode 1))
+  #+end_src
+*** unique lines
+- ...
+  #+begin_src emacs-lisp :tangle yes
+  ;; {{ unique lines
+  (defun uniquify-all-lines-region (start end)
+    "Find duplicate lines in region START to END keeping first occurrence."
+    (interactive "*r")
+    (save-excursion
+      (let ((end (copy-marker end)))
+        (while
+            (progn
+              (goto-char start)
+              (re-search-forward "^\\(.*\\)\n\\(\\(.*\n\\)*\\)\\1\n" end t))
+          (replace-match "\\1\n\\2")))))
+  
+  (defun uniquify-all-lines-buffer ()
+    "Delete duplicate lines in buffer and keep first occurrence."
+    (interactive "*")
+    (uniquify-all-lines-region (point-min) (point-max)))
+  ;; }}
+  
+  #+end_src
+*** direx 
+- ...
+  #+begin_src emacs-lisp :tangle yes
+  ; {{ direx
+  (autoload 'direx:jump-to-directory "direx" "" t)
+  (global-set-key (kbd "C-x C-j") 'direx:jump-to-directory)
+  ;; }}
+  
+  #+end_src
+*** imenu
+- ...
+  #+begin_src emacs-lisp :tangle yes
+  ;; {{ imenu
+  (setq imenu-max-item-length 128)
+  (setq imenu-max-item-length 64)
+  ;; }}
+  #+end_src
+
+*** +/- font size
+- ...
+  #+begin_src emacs-lisp :tangle yes
+  ;; increase and decrease font size in GUI emacs
+  (when (display-graphic-p)
+    (global-set-key (kbd "C-=") 'text-scale-increase)
+    (global-set-key (kbd "C--") 'text-scale-decrease)
+    )
+  #+end_src
+
+*** browse-kill-ring
+- ...
+  #+begin_src emacs-lisp :tangle yes
+  (require 'browse-kill-ring)
+  (browse-kill-ring-default-keybindings)
+  #+end_src
+
+*** python indent
+- ...
+  #+begin_src emacs-lisp :tangle yes
+  ;; @see http://emacs.stackexchange.com/questions/3322/python-auto-indent-problem/3338#3338
+  (if (fboundp 'electric-indent-mode) (electric-indent-mode -1))
   #+end_src
 
 
@@ -305,4 +634,91 @@
                      ((equal prefix '(16)) "%d %B %Y")))
             )
         (insert (format-time-string format))))
+  #+end_src
+*** ibuffer
+- ...
+  #+begin_src emacs-lisp :tangle yes
+  (defalias 'list-buffers 'ibuffer)
+  #+end_src
+*** region-length
+- ...
+  #+begin_src emacs-lisp :tangle yes
+  ;;compute the length of the marked region
+  (defun region-length ()
+    "length of a region"
+    (interactive)
+    (message (format "%d" (- (region-end) (region-beginning)))))
+  #+end_src
+*** file rename and copy
+- ...
+  #+begin_src emacs-lisp :tangle yes
+  ;; from http://emacsredux.com/blog/2013/05/04/rename-file-and-buffer/
+  (defun vc-rename-file-and-buffer ()
+    "Rename the current buffer and file it is visiting."
+    (interactive)
+    (let ((filename (buffer-file-name)))
+      (if (not (and filename (file-exists-p filename)))
+          (message "Buffer is not visiting a file!")
+        (let ((new-name (read-file-name "New name: " filename)))
+          (cond
+           ((vc-backend filename) (vc-rename-file filename new-name))
+           (t
+            (rename-file filename new-name t)
+            (rename-buffer new-name)
+            (set-visited-file-name new-name)
+            (set-buffer-modified-p nil)))))))
+  
+  (defun vc-copy-file-and-rename-buffer ()
+  "copy the current buffer and file it is visiting.
+  if the old file is under version control, the new file is added into
+  version control automatically"
+    (interactive)
+    (let ((filename (buffer-file-name)))
+      (if (not (and filename (file-exists-p filename)))
+          (message "Buffer is not visiting a file!")
+        (let ((new-name (read-file-name "New name: " filename)))
+          (copy-file filename new-name t)
+          (rename-buffer new-name)
+          (set-visited-file-name new-name)
+          (set-buffer-modified-p nil)
+          (when (vc-backend filename)
+            (vc-register)
+           )))))
+  #+end_src
+*** toggle-full-window
+- ...
+  #+begin_src emacs-lisp :tangle yes
+  (defun toggle-full-window()
+    "Toggle the full view of selected window"
+    (interactive)
+    ;; @see http://www.gnu.org/software/emacs/manual/html_node/elisp/Splitting-Windows.html
+    (if (window-parent)
+        (delete-other-windows)
+      (winner-undo)
+      ))
+  #+end_src
+*** add-pwd-into-load-path
+- ...
+  #+begin_src emacs-lisp :tangle yes
+  (defun add-pwd-into-load-path ()
+    "add current directory into load-path, useful for elisp developers"
+    (interactive)
+    (let ((dir (expand-file-name default-directory)))
+      (if (not (memq dir load-path))
+          (add-to-list 'load-path dir)
+          )
+      (message "Directory added into load-path:%s" dir)
+      )
+    )
+  #+end_src
+*** display-line-number
+- ...
+  #+begin_src emacs-lisp :tangle yes
+  (defun display-line-number ()
+    "display current line number in mini-buffer"
+    (interactive)
+    (let (l)
+      (setq l (line-number-at-pos))
+      (message "line number:%d" l)
+      ))
   #+end_src

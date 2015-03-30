@@ -20,8 +20,8 @@
 ;;  visible-bell t)
 
 ;; use my own bmk if it exists
-(if (file-exists-p (file-truename "~/.emacs.bmk"))
-    (setq bookmark-default-file (file-truename "~/.emacs.bmk")))
+;; (if (file-exists-p (file-truename "~/.emacs.bmk"))
+;;     (setq bookmark-default-file (file-truename "~/.emacs.bmk")))
 
 (global-auto-revert-mode)
 (setq global-auto-revert-non-file-buffers t
@@ -38,7 +38,7 @@
 
 (transient-mark-mode t)
 
-(define-key global-map (kbd "RET") 'newline-and-indent)
+;; (define-key global-map (kbd "RET") 'newline-and-indent)
 
 (add-to-list 'auto-mode-alist '("\\.[Cc][Ss][Vv]\\'" . csv-mode))
 (autoload 'csv-mode "csv-mode" "Major mode for comma-separated value files." t)
@@ -68,8 +68,8 @@
 ;; To be able to M-x without meta
 (global-set-key (kbd "C-x C-m") 'execute-extended-command)
 
-(global-set-key (kbd "C-.") 'set-mark-command)
-(global-set-key (kbd "C-x C-.") 'pop-global-mark)
+;; (global-set-key (kbd "C-.") 'set-mark-command)
+;; (global-set-key (kbd "C-x C-.") 'pop-global-mark)
 
 ;;----------------------------------------------------------------------------
 ;; Page break lines
@@ -199,7 +199,7 @@
 ;; (column-number-mode 1)
 
 ;; NO automatic new line when scrolling down at buffer bottom
-(setq next-line-add-newlines nil)
+;; (setq next-line-add-newlines nil)
 
 ;; @see http://stackoverflow.com/questions/4222183/emacs-how-to-jump-to-function-definition-in-el-file
 (global-set-key (kbd "C-h C-f") 'find-function)
@@ -320,7 +320,7 @@ grab matched string, cssize them, and insert into kill ring"
 ;; (setq display-time-day-and-date t)
 ;; (display-time)
 
-(global-set-key [f12] 'list-bookmarks)
+;; (global-set-key [f12] 'list-bookmarks)
 ;; (global-set-key (kbd "M-o") 'switch-window)
 
 (when *win32*
@@ -405,13 +405,13 @@ grab matched string, cssize them, and insert into kill ring"
   (insert (format-time-string "%Y%m%d"))
   )
 
-;;compute the length of the marked region
-(defun region-length ()
-  "length of a region"
-  (interactive)
-  (message (format "%d" (- (region-end) (region-beginning)))))
+;; ;;compute the length of the marked region
+;; (defun region-length ()
+;;   "length of a region"
+;;   (interactive)
+;;   (message (format "%d" (- (region-end) (region-beginning)))))
 
-(defalias 'list-buffers 'ibuffer)
+;; (defalias 'list-buffers 'ibuffer)
 ;KEYBOARD SECTION
 ;global keyb maps
 (global-set-key "\C-xc" 'clipboard-kill-ring-save)
@@ -445,7 +445,7 @@ grab matched string, cssize them, and insert into kill ring"
 
 ;;; {{ clipboard stuff
 ;; Use the system clipboard
-(setq x-select-enable-clipboard t)
+;; (setq x-select-enable-clipboard t)
 
 ;; you need install xsel under Linux
 ;; xclip has some problem when copying under Linux
@@ -561,21 +561,21 @@ grab matched string, cssize them, and insert into kill ring"
                                        (mwheel-install)))))
 
 ; @see http://www.emacswiki.org/emacs/SavePlace
-(require 'saveplace)
-(setq-default save-place t)
+;; (require 'saveplace)
+;; (setq-default save-place t)
 
 ;; {{expand-region.el
 ;; if emacs-nox, use C-@, else, use C-2;
-(if window-system
- (progn
-   (define-key global-map (kbd "C-2") 'er/expand-region)
-   (define-key global-map (kbd "C-M-2") 'er/contract-region)
-   )
- (progn
-   (define-key global-map (kbd "C-@") 'er/expand-region)
-   (define-key global-map (kbd "C-M-@") 'er/contract-region)
- )
-)
+;; (if window-system
+;;  (progn
+;;    (define-key global-map (kbd "C-2") 'er/expand-region)
+;;    (define-key global-map (kbd "C-M-2") 'er/contract-region)
+;;    )
+;;  (progn
+;;    (define-key global-map (kbd "C-@") 'er/expand-region)
+;;    (define-key global-map (kbd "C-M-@") 'er/contract-region)
+;;  )
+;; )
 ;; }}
 
 ;;iedit-mode
@@ -585,9 +585,9 @@ grab matched string, cssize them, and insert into kill ring"
 (global-set-key (kbd "C-c C-l") 'align-regexp)
 
 ;; my screen is tiny, so I use minimum eshell prompt
-(setq eshell-prompt-function
-       (lambda ()
-         (concat (getenv "USER") " $ ")))
+;; (setq eshell-prompt-function
+;;        (lambda ()
+;;          (concat (getenv "USER") " $ ")))
 
 ;; max frame, @see https://github.com/rmm5t/maxframe.el
 (require 'maxframe)
@@ -748,37 +748,37 @@ buffer is not visiting a file."
 
 ;; {{ eval and replace anywhere
 ;; @see http://emacs.wordpress.com/2007/01/17/eval-and-replace-anywhere/
-(defun fc-eval-and-replace ()
-  "Replace the preceding sexp with its value."
-  (interactive)
-  (backward-kill-sexp)
-  (condition-case nil
-      (prin1 (eval (read (current-kill 0)))
-             (current-buffer))
-    (error (message "Invalid expression")
-           (insert (current-kill 0)))))
-(global-set-key (kbd "C-c e") 'fc-eval-and-replace)
+;; (defun fc-eval-and-replace ()
+;;   "Replace the preceding sexp with its value."
+;;   (interactive)
+;;   (backward-kill-sexp)
+;;   (condition-case nil
+;;       (prin1 (eval (read (current-kill 0)))
+;;              (current-buffer))
+;;     (error (message "Invalid expression")
+;;            (insert (current-kill 0)))))
+;; (global-set-key (kbd "C-c e") 'fc-eval-and-replace)
 
-(defun calc-eval-and-insert (&optional start end)
-(interactive "r")
-(let ((result (calc-eval (buffer-substring-no-properties start end))))
-(goto-char (point-at-eol))
-(insert " = " result)))
+;; (defun calc-eval-and-insert (&optional start end)
+;;   (interactive "r")
+;;   (let ((result (calc-eval (buffer-substring-no-properties start end))))
+;;     (goto-char (point-at-eol))
+;;     (insert " = " result)))
 
-(defun calc-eval-line-and-insert ()
-(interactive)
-(calc-eval-and-insert (point-at-bol) (point-at-eol)))
-(global-set-key (kbd "C-c C-e") 'calc-eval-line-and-insert)
-;; }}
+;; (defun calc-eval-line-and-insert ()
+;;   (interactive)
+;;   (calc-eval-and-insert (point-at-bol) (point-at-eol)))
+;; (global-set-key (kbd "C-c C-e") 'calc-eval-line-and-insert)
+;; ;; }}
 
 ;; input open source license
 (autoload 'legalese "legalese" "" t)
 
 ;; {{ buf-move
-(autoload 'buf-move-left "buffer-move" "move buffer" t)
-(autoload 'buf-move-right "buffer-move" "move buffer" t)
-(autoload 'buf-move-up "buffer-move" "move buffer" t)
-(autoload 'buf-move-down "buffer-move" "move buffer" t)
+;; (autoload 'buf-move-left "buffer-move" "move buffer" t)
+;; (autoload 'buf-move-right "buffer-move" "move buffer" t)
+;; (autoload 'buf-move-up "buffer-move" "move buffer" t)
+;; (autoload 'buf-move-down "buffer-move" "move buffer" t)
 ;; }}
 
 ;; edit confluence wiki
@@ -855,14 +855,14 @@ buffer is not visiting a file."
        ))
 ;; }}
 
-(defun toggle-full-window()
-  "Toggle the full view of selected window"
-  (interactive)
-  ;; @see http://www.gnu.org/software/emacs/manual/html_node/elisp/Splitting-Windows.html
-  (if (window-parent)
-      (delete-other-windows)
-    (winner-undo)
-    ))
+;; (defun toggle-full-window()
+;;   "Toggle the full view of selected window"
+;;   (interactive)
+;;   ;; @see http://www.gnu.org/software/emacs/manual/html_node/elisp/Splitting-Windows.html
+;;   (if (window-parent)
+;;       (delete-other-windows)
+;;     (winner-undo)
+;;     ))
 
 ;; {{ copy the file-name/full-path in dired buffer into clipboard
 ;; `w` => copy file name
@@ -947,31 +947,31 @@ The full path into relative path insert it as a local file link in org-mode"
   )
 
 ;; {{ save history
-(when (file-writable-p (file-truename "~/.emacs.d/history"))
-  (setq history-length 8000)
-  (setq savehist-additional-variables '(search-ring regexp-search-ring kill-ring))
-  (savehist-mode 1))
+;; (when (file-writable-p (file-truename "~/.emacs.d/history"))
+;;   (setq history-length 8000)
+;;   (setq savehist-additional-variables '(search-ring regexp-search-ring kill-ring))
+;;   (savehist-mode 1))
 ;; }}
 
 (setq system-time-locale "C")
 
-;; {{ unique lines
-(defun uniquify-all-lines-region (start end)
-  "Find duplicate lines in region START to END keeping first occurrence."
-  (interactive "*r")
-  (save-excursion
-    (let ((end (copy-marker end)))
-      (while
-          (progn
-            (goto-char start)
-            (re-search-forward "^\\(.*\\)\n\\(\\(.*\n\\)*\\)\\1\n" end t))
-        (replace-match "\\1\n\\2")))))
+;; ;; {{ unique lines
+;; (defun uniquify-all-lines-region (start end)
+;;   "Find duplicate lines in region START to END keeping first occurrence."
+;;   (interactive "*r")
+;;   (save-excursion
+;;     (let ((end (copy-marker end)))
+;;       (while
+;;           (progn
+;;             (goto-char start)
+;;             (re-search-forward "^\\(.*\\)\n\\(\\(.*\n\\)*\\)\\1\n" end t))
+;;         (replace-match "\\1\n\\2")))))
 
-(defun uniquify-all-lines-buffer ()
-  "Delete duplicate lines in buffer and keep first occurrence."
-  (interactive "*")
-  (uniquify-all-lines-region (point-min) (point-max)))
-;; }}
+;; (defun uniquify-all-lines-buffer ()
+;;   "Delete duplicate lines in buffer and keep first occurrence."
+;;   (interactive "*")
+;;   (uniquify-all-lines-region (point-min) (point-max)))
+;; ;; }}
 
 ;; {{start dictionary lookup
 ;; use below commands to create dicitonary
@@ -993,10 +993,10 @@ The full path into relative path insert it as a local file link in org-mode"
 (autoload 'smart-compile "smart-compile" "" t)
 ;; }}
 
-; {{ direx
-(autoload 'direx:jump-to-directory "direx" "" t)
-(global-set-key (kbd "C-x C-j") 'direx:jump-to-directory)
-;; }}
+;; ; {{ direx
+;; (autoload 'direx:jump-to-directory "direx" "" t)
+;; (global-set-key (kbd "C-x C-j") 'direx:jump-to-directory)
+;; ;; }}
 
 ;; {{ support MY packages which are not included in melpa
 (autoload 'wxhelp-browse-class-or-api "wxwidgets-help" "" t)
@@ -1013,18 +1013,18 @@ The full path into relative path insert it as a local file link in org-mode"
     ("^[ \t]*<\\(@[a-z.]+\\)[^>]*>? *$" 1 " contentId=\"\\([a-zA-Z0-9_]+\\)\"" "=" ">")
     ))
 
-;; {{ imenu
-(setq imenu-max-item-length 128)
-(setq imenu-max-item-length 64)
-;; }}
+;; ;; {{ imenu
+;; (setq imenu-max-item-length 128)
+;; (setq imenu-max-item-length 64)
+;; ;; }}
 
-(defun display-line-number ()
-  "display current line number in mini-buffer"
-  (interactive)
-  (let (l)
-    (setq l (line-number-at-pos))
-    (message "line number:%d" l)
-    ))
+;; (defun display-line-number ()
+;;   "display current line number in mini-buffer"
+;;   (interactive)
+;;   (let (l)
+;;     (setq l (line-number-at-pos))
+;;     (message "line number:%d" l)
+;;     ))
 
 (defun toggle-web-js-offset ()
   "toggle js2-basic-offset"
@@ -1041,10 +1041,10 @@ The full path into relative path insert it as a local file link in org-mode"
 (autoload 'sos "sos" "search stackoverflow" t)
 
 ;; increase and decrease font size in GUI emacs
-(when (display-graphic-p)
-  (global-set-key (kbd "C-=") 'text-scale-increase)
-  (global-set-key (kbd "C--") 'text-scale-decrease)
-  )
+;; (when (display-graphic-p)
+;;   (global-set-key (kbd "C-=") 'text-scale-increase)
+;;   (global-set-key (kbd "C--") 'text-scale-decrease)
+;;   )
 
 ;; {{ which-func
 (autoload 'which-function "which-func")
@@ -1087,10 +1087,10 @@ The full path into relative path insert it as a local file link in org-mode"
 ;; (blink-cursor-mode -1)
 
 ;; https://github.com/browse-kill-ring/browse-kill-ring
-(require 'browse-kill-ring)
-(browse-kill-ring-default-keybindings)
+;; (require 'browse-kill-ring)
+;; (browse-kill-ring-default-keybindings)
 
-;; @see http://emacs.stackexchange.com/questions/3322/python-auto-indent-problem/3338#3338
-(if (fboundp 'electric-indent-mode) (electric-indent-mode -1))
+;; ;; @see http://emacs.stackexchange.com/questions/3322/python-auto-indent-problem/3338#3338
+;; (if (fboundp 'electric-indent-mode) (electric-indent-mode -1))
 
 (provide 'init-misc)
